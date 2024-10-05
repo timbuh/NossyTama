@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
 
 public class GameController : MonoBehaviour
@@ -11,17 +12,25 @@ public class GameController : MonoBehaviour
     public float dayNightTimer;       
     public GameObject skyObject;
 
-    [Header("Death State Variables")]
-    public bool isDead;
-    public float maxTimeInSun = 10f;
-    public float sunExposureTimer;
-
-    public GameObject deathMenu;
 
     [Header("Curtain Variables")]
     public GameObject curtainObject;  
     public bool areCurtainsClosed;    
-    public Animator curtainAnimator;    
+    public Animator curtainAnimator;
+
+    [Header("Life Variables")]
+    public bool isDead;
+
+    [Header("Sun Death Variables")]
+    public float maxTimeInSun = 10f;
+    public float sunExposureTimer;
+
+    [Header("Death event systems")]
+    public UnityEvent OnDeath;
+
+    public UnityEvent OnBurn;
+    public UnityEvent OnStarve;
+    public UnityEvent OnDepression;
 
     void Start()
     {
@@ -33,8 +42,6 @@ public class GameController : MonoBehaviour
         isDead = false;
 
         areCurtainsClosed = true;
-
-        deathMenu.SetActive(false);
 
         StartCoroutine(DayNightToggle());
     }
@@ -128,10 +135,13 @@ public class GameController : MonoBehaviour
         isDead = true;
         Debug.Log("You have died from sun exposure.");
         Die();
+
+        OnBurn.Invoke();
+
     }
 
     void Die()
     {
-        deathMenu.SetActive(true);
+        OnDeath.Invoke();
     }
 }
